@@ -1,0 +1,18 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: requesting a certificate from cloudformation
+Resources: 
+  MyCertificate: 
+    Type:
+      AWS::CertificateManager::Certificate
+    Properties: 
+      DomainName: 
+        fox1.cloudspacellc.com
+      ValidationMethod: DNS
+Outputs:
+  MyCertificate:    
+    Description: MyCertificate ARN or ID
+    Value:
+      !Ref MyCertificate
+    Export:
+      Name: !Sub "${AWS::StackName}-MyCertificateID"
+    

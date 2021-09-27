@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create a VPC and an assumable role for cross account VPC peering.
+# Parameters:
+#   PeerRequesterAccountId:
+#     Type: "512121751697"
+Parameters:
+  PrivateVPCIDCIDRRange:
+    Description: The IP address range for your new Private VPC.
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    # Default: 10.0.0.0/16
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+
+Resources:
+  PeeringRoute2:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      DestinationCidrBlock: !Ref PrivateVPCIDCIDRRange
+      RouteTableId: !ImportValue Fox-network-template-PrivateRouteTableID
+      VpcPeeringConnectionId: !Ref vpcPeeringConnection
+  PeeringRoute1:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      DestinationCidrBlock: 172.31.0.0/16 # 0.0.0.0/0 ip cidr block of accepter account
+      RouteTableId: !ImportValue Fox-network-template-PrivateRouteTableID
+      VpcPeeringConnectionId: !Ref vpcPeeringConnection
+    #Peering connection            
+  vpcPeeringConnection:
+    Type: 'AWS::EC2::VPCPeeringConnection'
+    Properties:
+      VpcId: vpc-04834cc55f1fb268b     # requester vpc id
+      PeerVpcId: vpc-0c967871   # accepter vpc id
+      PeerOwnerId: "512121751697"    # accepter aws account id
+      PeerRoleArn: arn:aws:iam::512121751697:role/Fox2021Peering-peerRole-15CR6ELC3MEPR             
+Outputs:
+  VPCPeeringConnectionId:
+    Value: !Ref vpcPeeringConnection
