@@ -6,37 +6,53 @@ Resources:
       VpcId: !ImportValue Fox-network-template-VPCID
       SecurityGroupIngress:
         - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 72.83.17.230/32  ####francoise ip home
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 96.88.198.165/32   ###### francoise ip work
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 192.168.0.0/16   #### vpc cidr block
+        - IpProtocol: tcp
           FromPort: '80'
           ToPort: '80'
-          CidrIp: 0.0.0.0/0
+          SourceSecurityGroupId: 
+            !Ref ELBSecurityGroup
         - IpProtocol: tcp
-          FromPort: '22'
-          ToPort: '22'
-          CidrIp: 72.83.17.230/32
-        - IpProtocol: tcp
-          FromPort: '22'
-          ToPort: '22'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '22'
-          ToPort: '22'
-          CidrIp: 192.168.0.0/16
-          ####### Wordpress update SG
-        # - IpProtocol: tcp
-        #   FromPort: '80'
-        #   ToPort: '80'
-        #   SourceSecurityGroupId: "sg-0623932e26ac6c3a6"
-            # - !Ref PublicWebServerSecurityGroup
-
-        # - IpProtocol: tcp
-        #   FromPort: '22'
-        #   ToPort: '22'
-        #   CidrIp: !Ref SSHLocation
+          FromPort: '443'
+          ToPort: '443'
+          SourceSecurityGroupId: 
+            !Ref ELBSecurityGroup
       Tags:
       - Key: Name
         Value: !Sub ${AWS::StackName}-Public-sg
 
-      
+  ELBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'SSH and Port 80'
+      VpcId:
+        !ImportValue Fox-network-template-VPCID
+      SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 80
+            ToPort: 80
+            CidrIp: 0.0.0.0/0
+          - CidrIp: 0.0.0.0/0
+            FromPort: 443
+            IpProtocol: tcp
+            ToPort: 443
+      Tags:
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-ELBSecurityGroup
 
   PrivateWebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -47,11 +63,23 @@ Resources:
         - IpProtocol: tcp
           FromPort: '80'
           ToPort: '80'
-          CidrIp: 0.0.0.0/0
+          CidrIp: 192.168.0.0/16  ##### my vpc cidr bloc
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 172.31.0.0/16    ##### peering vpc cidr block (idriss)
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 10.0.0.0/16     ##### peering vpc cidr block (francoise)
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
           CidrIp: 72.83.17.230/32
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 96.88.198.165/32
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
@@ -77,3 +105,11 @@ Outputs:
       - GroupId
     Export:
       Name: !Sub '${AWS::StackName}-privateSecurityGroupID'
+
+  ELBSecurityGroup:
+    Description: The security group ID to use for the load balancer
+    Value: !GetAtt 
+      - ELBSecurityGroup
+      - GroupId
+    Export:
+      Name: !Sub '${AWS::StackName}-ELBSecurityGroupID'
