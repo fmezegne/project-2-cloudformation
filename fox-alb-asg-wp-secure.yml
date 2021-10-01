@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
-  # AcmCertificate:
-  #   Description: The ARN of the AWS Certification Manager's Certificate 
-  #   Type: String
-  #   Default: "arn:aws:acm:us-east-1:086900803177:certificate/bd5c1908-2a61-4252-af67-32d6132bc54d"
+  AcmCertificate:
+    Description: The ARN of the AWS Certification Manager's Certificate 
+    Type: String
+    Default: "arn:aws:acm:us-east-1:086900803177:certificate/bd5c1908-2a61-4252-af67-32d6132bc54d"
   LatestAmiId:
     Description: Region specific image from the Parameter Store
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
@@ -82,7 +82,6 @@ Parameters:
       - db.t2.micro
       - db.t2.small
       - db.t2.medium
-      - db.t2.large
     ConstraintDescription: must select a valid database instance type.
 Mappings:
   AWSInstanceType2Arch:
@@ -96,9 +95,6 @@ Mappings:
       Arch: HVM64
     t2.medium:
       Arch: HVM64
-    t2.large:
-      Arch: HVM64
-
   AWSInstanceType2NATArch:
     t1.micro:
       Arch: NATHVM64
@@ -112,7 +108,6 @@ Mappings:
       Arch: NATHVM64
     t2.large:
       Arch: NATHVM64
-
   AWSRegionArch2AMI:
     us-east-1:
       HVM64: ami-032930428bf1abbff
@@ -160,50 +155,38 @@ Resources:
       VpcId: !ImportValue Fox-network-template-VPCID
 
 #  Create a Listener on Port 80  with redirect
-  # PublicLoadBalancerListener:
-  #   Type: AWS::ElasticLoadBalancingV2::Listener
-  #   DependsOn:
-  #     - PublicLoadBalancer
-  #   Properties:
-  #     DefaultActions:
-  #       - RedirectConfig:
-  #           Host: '#{host}'
-  #           Path: '/#{path}'
-  #           Port: '443'
-  #           Query: "#{query}"
-  #           Protocol: HTTPS
-  #           StatusCode: HTTP_301
-  #         Type: redirect
-  #     LoadBalancerArn: !Ref 'PublicLoadBalancer'
-  #     Port: 80
-  #     Protocol: HTTP          
- 
-#Create a Listener on Port 443
-  # ALBListenerSslCertificate:
-  #   Type : AWS::ElasticLoadBalancingV2::Listener
-  #   Properties:
-  #     Certificates:
-  #       - CertificateArn: "arn:aws:acm:us-east-1:086900803177:certificate/bd5c1908-2a61-4252-af67-32d6132bc54d"
-  #     DefaultActions:
-  #       - Type: forward 
-  #         TargetGroupArn: !Ref TargetGroupPublic
-  #     LoadBalancerArn: !Ref PublicLoadBalancer
-  #     Port: 443
-  #     Protocol: HTTPS 
-
-      # WORDPRESS
-
   PublicLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     DependsOn:
       - PublicLoadBalancer
     Properties:
       DefaultActions:
-        - TargetGroupArn: !Ref 'TargetGroupPublic'
-          Type: 'forward'
+        - RedirectConfig:
+            Host: '#{host}'
+            Path: '/#{path}'
+            Port: '443'
+            Query: "#{query}"
+            Protocol: HTTPS
+            StatusCode: HTTP_301
+          Type: redirect
       LoadBalancerArn: !Ref 'PublicLoadBalancer'
       Port: 80
-      Protocol: HTTP
+      Protocol: HTTP          
+ 
+# Create a Listener on Port 443
+  ALBListenerSslCertificate:
+    Type : AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      Certificates:
+        - CertificateArn: "arn:aws:acm:us-east-1:086900803177:certificate/bd5c1908-2a61-4252-af67-32d6132bc54d"
+      DefaultActions:
+        - Type: forward 
+          TargetGroupArn: !Ref TargetGroupPublic
+      LoadBalancerArn: !Ref PublicLoadBalancer
+      Port: 443
+      Protocol: HTTPS 
+
+      # WORDPRESS
 
   ####### define Autoscalling group template    
   LaunchConfig:
@@ -363,7 +346,6 @@ Resources:
               command: /tmp/create-wp-config
               cwd: /var/www/html/wordpress    
     Properties:
-      # ImageId: ami-00b4f92f0e81aca60
       ImageId: ami-032930428bf1abbff
       AssociatePublicIpAddress: 'true'
       InstanceType: !Ref InstanceType
@@ -394,11 +376,10 @@ Resources:
             - !Ref 'AWS::Region'
             - |+ 
 
-####### webserver autoscalling group with cloudwatch
+####### webserver autoscalling group
   ApplicationAsg:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      AutoScalingGroupName: ApplicationAsg
       MinSize: '2'
       MaxSize: '4'
       DesiredCapacity: '2'
@@ -416,19 +397,7 @@ Resources:
         - autoscaling:EC2_INSTANCE_LAUNCH_ERROR
         - autoscaling:EC2_INSTANCE_TERMINATE
         - autoscaling:EC2_INSTANCE_TERMINATE_ERROR
-        - autoscaling:TEST_NOTIFICATION
-
-    # CreationPolicy:
-    #   ResourceSignal:
-    #     Timeout: PT5M
-    # UpdatePolicy:
-    #   AutoScalingRollingUpdate:
-    #     MinInstancesInService: '1'
-    #     MaxBatchSize: '1'
-    #     PauseTime: PT15M
-    #     WaitOnResourceSignals: 'true'
-    # DependsOn: DBInstance
-      # - arn:aws:elasticloadbalancing:us-east-1:086900803177:targetgroup/Fox-wdpress-RDS-drop-1/7f0f78b7c402c33b
+        - autoscaling:TEST_NOTIFICATION     
 
   # SNS Topic   
   MySNSTopic:
@@ -436,10 +405,7 @@ Resources:
     Properties:
       Subscription: 
       - Endpoint: "fsilver23@yahoo.com"
-        Protocol: email
-      # - Endpoint: "training@cloudspaceconsulting.com"
-      #   Protocol: email
-      # TopicName: "snsTopicForAutoScaling"
+        Protocol: email  
 
   #Scale Out Policy
   myScaleOutPolicy:
@@ -552,7 +518,7 @@ Resources:
         - !ImportValue Fox-web-server-sg-privateSecurityGroupID
       Tags:
       - Key: Name
-        Value: !Sub ${AWS::StackName}-Private-instance-1
+        Value: !Sub ${AWS::StackName}-MyprivWebserver
       UserData:
         Fn::Base64: |
           #!/bin/bash 
@@ -572,7 +538,6 @@ Outputs:
           - DNSName
         - /wordpress
     Description: WordPress Website
-
 # External load balancer
   ExternalLoadBalancer:    
     Description: This LoadBalancer is for the public subnet
