@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CloudFormation Sample Template Route53_A: Sample template showing how to
+  create an Amazon Route 53 A record that maps to the public IP address of an
+  EC2 instance. It assumes that you already have a Hosted Zone registered with
+  Amazon Route 53. **WARNING** This template creates an Amazon EC2 instance. You
+  will be billed for the AWS resources used if you create a stack from this
+  template.
+
+Resources:
+  GeolocationRecord:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      Comment: Creating records for US user
+      HostedZoneId: Z053926768JC0ENYSR0I
+      RecordSets:
+      - Name: geo.fox1.cloudspacellc.com
+        ResourceRecords:
+        - !ImportValue wordpress-stack-PublicLoadBalancerDnsName
+        TTL: '60'
+        SetIdentifier: Frontend One
+        Type: CNAME
+        GeoLocation:
+          CountryCode: 'US'
+      - Name: geo.fox1.cloudspacellc.com
+        ResourceRecords:
+        - !ImportValue static-website-S3BucketUrl
+        TTL: '60'
+        SetIdentifier: Frontend Two
+        Type: CNAME
+        GeoLocation:
+          CountryCode: '*'
+Outputs:
+  DomainName:
+    Description: Fully qualified domain name
+    Value: !Ref GeolocationRecord
+    # Value: !Sub 'https://${GeolocationRecord}/'
+    
