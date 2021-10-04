@@ -1,9 +1,8 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Create a VPC and an assumable role for cross account VPC peering.
 Parameters:
-  PeerRequesterAccountId:
-    Type: "512121751697"
-Parameters:
+  # PeerRequesterAccountId:
+  #   Type: "512121751697"
   PrivateVPCIDCIDRRange:
     Description: The IP address range for your new Private VPC.
     Type: String
