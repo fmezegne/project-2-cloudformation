@@ -23,7 +23,7 @@ Resources:
       LoginProfile: 
         Password: !Ref 'Password'
         PasswordResetRequired: 'true'
-      UserName: francoise
+      UserName: dasilver
   Addusers1:
     Type: AWS::IAM::UserToGroupAddition
     Properties: 
