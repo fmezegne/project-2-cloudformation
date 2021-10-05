@@ -12,11 +12,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
-          CidrIp: 96.88.198.165/32   ###### francoise ip work
+          CidrIp: 24.97.68.194/32   ###### soho ip work
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
-          CidrIp: 0.0.0.0/0
+          CidrIp: 98.234.24.2/32     ##### danielle ip
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
@@ -75,11 +75,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
-          CidrIp: 72.83.17.230/32
+          CidrIp: 72.83.17.230/32     ###### francoise ip
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
-          CidrIp: 96.88.198.165/32
+          CidrIp: 98.234.24.2/32     ####### soho ip
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
