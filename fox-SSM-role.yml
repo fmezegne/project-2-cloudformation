@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  IamRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: '*'
+                Resource: '*'
+  Ec2InstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: /
+      Roles:
+        - !Ref IamRole
+Outputs:
+  RoleARN:
+    Value: !GetAtt 
+      - IamRole
+      - Arn
+  
+  Ec2InstanceProfile:
+    Description: Ec2InstanceProfile ID
+    Value:
+      !Ref Ec2InstanceProfile
+    Export:
+      Name: !Sub "${AWS::StackName}-Ec2InstanceProfileID"
