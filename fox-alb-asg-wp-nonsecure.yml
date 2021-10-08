@@ -560,7 +560,7 @@ Resources:
           yum install -y httpd 
           systemctl start httpd 
           systemctl enable httpd
-          echo "WELCOME TO AFRICAN FINANCIAL INTERNAL WEBSITE. THIS APPLICATION WAS LUNCHED USING CLOUDFORMATION." >/var/www/html/index.html
+          echo "WELCOME TO AFRICAN FINANCIAL INTERNAL WEBSITE LAUNCHED WITH JENKINS. THIS APPLICATION WAS LUNCHED USING CLOUDFORMATION." >/var/www/html/index.html
 
 Outputs:
   WebsiteURL:
