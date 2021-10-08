@@ -508,7 +508,7 @@ Resources:
     Type: "AWS::RDS::DBSubnetGroup"
 
 ###### SSM role to allow ec2 connect via session manager
-  IAMRole:
+  RootRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
@@ -534,7 +534,7 @@ Resources:
     Properties:
       Path: /
       Roles:
-        - !Ref IAMRole
+        - !Ref RootRole
 
 # Private website configuration
   MyprivWebserver: 
