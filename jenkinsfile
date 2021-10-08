@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    stages {
+        stage('IAM') {
+            steps {
+                build 'iam-template'
+            }
+        }
+        stage('Securitygroup') {
+            steps {
+                build 'security-group-template'
+            }
+        }
+        stage('wordpress') {
+            steps {
+                build 'wordpress-template'
+            }
+        }
+        stage('peering') {
+            steps {
+                build 'peering-template'
+            }
+        }
+        stage('static') {
+            steps {
+                build 'static-web-template'
+            }
+        }
+        stage('s3lifecycle') {
+            steps {
+                build 'S3-template-lifecycle'
+            }
+        }
+        stage('geolocation') {
+            steps {
+                build 'Route-53-template'
+            }
+        }
+    }
+    post {
+        always {
+            emailext body: 'This pipeline was successfully deploy', subject: 'successful pipeline', to: 'd.tchonla@gmail.com'
+        }
+        failure {
+           emailext body: 'This pipeline was successfully deploy', subject: 'successful pipeline', to: 'd.tchonla@gmail.com'
+        }
+    }
+}
