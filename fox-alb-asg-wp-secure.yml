@@ -347,6 +347,7 @@ Resources:
               cwd: /var/www/html/wordpress    
     Properties:
       ImageId: ami-032930428bf1abbff
+      # ImageId: ami-02e136e904f3da870      
       AssociatePublicIpAddress: 'true'
       InstanceType: !Ref InstanceType
       KeyName: !Ref KeyName
@@ -512,6 +513,7 @@ Resources:
     Properties: 
       ImageId: !Ref LatestAmiId
       InstanceType: t2.micro
+      IamInstanceProfile: !ImportValue ssm-role-template-Ec2InstanceProfileID     ###### allow ssm
       KeyName: !Ref KeyName
       SubnetId: !ImportValue Fox-network-template-Priv1SubnetID
       SecurityGroupIds: 
