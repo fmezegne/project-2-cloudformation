@@ -507,13 +507,42 @@ Resources:
           Value: String
     Type: "AWS::RDS::DBSubnetGroup"
 
+###### SSM role to allow ec2 connect via session manager
+  # IamRole:
+  #   Type: 'AWS::IAM::Role'
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             Service:
+  #               - ec2.amazonaws.com
+  #           Action:
+  #             - 'sts:AssumeRole'
+  #     Path: /
+  #     Policies:
+  #       - PolicyName: root
+  #         PolicyDocument:
+  #           Version: "2012-10-17"
+  #           Statement:
+  #             - Effect: Allow
+  #               Action: '*'
+  #               Resource: '*'
+  # Ec2InstanceProfile:
+  #   Type: 'AWS::IAM::InstanceProfile'
+  #   Properties:
+  #     Path: /
+  #     Roles:
+  #       - !Ref IamRole
+
 # Private website configuration
   MyprivWebserver: 
     Type: AWS::EC2::Instance
     Properties: 
       ImageId: !Ref LatestAmiId
       InstanceType: t2.micro
-      IamInstanceProfile: !ImportValue ssm-role-template-Ec2InstanceProfileID     ###### allow ssm
+      # IamInstanceProfile: !Ref Ec2InstanceProfile    ###### allow ssm
       KeyName: !Ref KeyName
       SubnetId: !ImportValue Fox-network-template-Priv1SubnetID
       SecurityGroupIds: 
