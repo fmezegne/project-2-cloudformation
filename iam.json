@@ -1,0 +1,168 @@
+{
+   "Parameters": {
+      "Password": {
+         "NoEcho": "true",
+         "Type": "String",
+         "Description": "New account password",
+         "MinLength": "1",
+         "MaxLength": "41",
+         "ConstraintDescription": "the password must be between 1 and 41 characters"
+      }
+   },
+   "Resources": {
+      "Usergroup1": {
+         "Type": "AWS::IAM::Group",
+         "Properties": {
+            "GroupName": "FoxUsergroup",
+            "ManagedPolicyArns": [
+               "arn:aws:iam::aws:policy/AdministratorAccess",
+               "arn:aws:iam::086900803177:policy/billing-policy"
+            ]
+         }
+      },
+      "Users1": {
+         "Type": "AWS::IAM::User",
+         "Properties": {
+            "Groups": [
+               null
+            ],
+            "LoginProfile": {
+               "Password": null,
+               "PasswordResetRequired": "true"
+            },
+            "UserName": "francoise"
+         }
+      },
+      "Addusers1": {
+         "Type": "AWS::IAM::UserToGroupAddition",
+         "Properties": {
+            "GroupName": null,
+            "Users": [
+               null
+            ]
+         }
+      },
+      "Usergroup2": {
+         "Type": "AWS::IAM::Group",
+         "Properties": {
+            "GroupName": "NAS-Financial-Group-Security-Team",
+            "ManagedPolicyArns": [
+               "arn:aws:iam::aws:policy/AdministratorAccess"
+            ]
+         }
+      },
+      "Users2": {
+         "Type": "AWS::IAM::User",
+         "Properties": {
+            "Groups": [
+               null
+            ],
+            "LoginProfile": {
+               "Password": null,
+               "PasswordResetRequired": "true"
+            },
+            "UserName": "idriss"
+         }
+      },
+      "Users3": {
+         "Type": "AWS::IAM::User",
+         "Properties": {
+            "Groups": [
+               null
+            ],
+            "LoginProfile": {
+               "Password": null,
+               "PasswordResetRequired": "true"
+            },
+            "UserName": "soho"
+         }
+      },
+      "Addusers2": {
+         "Type": "AWS::IAM::UserToGroupAddition",
+         "Properties": {
+            "GroupName": null,
+            "Users": [
+               null,
+               null
+            ]
+         }
+      },
+      "Usergroup3": {
+         "Type": "AWS::IAM::Group",
+         "Properties": {
+            "GroupName": "NAS-Financial-Group-Operations-Team",
+            "ManagedPolicyArns": [
+               "arn:aws:iam::aws:policy/AdministratorAccess",
+               "arn:aws:iam::086900803177:policy/us-east-1",
+               "arn:aws:iam::086900803177:policy/billing-policy"
+            ]
+         }
+      },
+      "Users4": {
+         "Type": "AWS::IAM::User",
+         "Properties": {
+            "Groups": [
+               null
+            ],
+            "LoginProfile": {
+               "Password": null,
+               "PasswordResetRequired": "true"
+            },
+            "UserName": "claudio"
+         }
+      },
+      "Users5": {
+         "Type": "AWS::IAM::User",
+         "Properties": {
+            "Groups": [
+               null
+            ],
+            "LoginProfile": {
+               "Password": null,
+               "PasswordResetRequired": "true"
+            },
+            "UserName": "danielle"
+         }
+      },
+      "Users6": {
+         "Type": "AWS::IAM::User",
+         "Properties": {
+            "Groups": [
+               null
+            ],
+            "LoginProfile": {
+               "Password": null,
+               "PasswordResetRequired": "true"
+            },
+            "UserName": "narcisse"
+         }
+      },
+      "Addusers3": {
+         "Type": "AWS::IAM::UserToGroupAddition",
+         "Properties": {
+            "GroupName": null,
+            "Users": [
+               null,
+               null,
+               null
+            ]
+         }
+      },
+      "Keypairs": {
+         "Type": "AWS::IAM::AccessKey",
+         "Properties": {
+            "UserName": null
+         }
+      }
+   },
+   "Outputs": {
+      "AccessKey": {
+         "Value": null,
+         "Description": "AWSAccessKeyId of new user"
+      },
+      "SecretKey": {
+         "Value": null,
+         "Description": "AWSSecretAccessKey of new user"
+      }
+   }
+}
